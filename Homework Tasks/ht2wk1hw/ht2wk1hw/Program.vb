@@ -16,7 +16,7 @@ Module Program
 
     Function squareOfSum(maxNum As Integer, total As Integer) As Integer
         If maxNum = 0 Then
-            total *= tota
+            total *= total
             Return total
         Else
             total += maxNum
