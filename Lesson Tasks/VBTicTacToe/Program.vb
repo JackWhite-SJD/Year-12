@@ -62,6 +62,7 @@ Module Program
             Return False
         End If
     End Function
+
     Function changeTurn(player As String) As String
         Dim players(1) As String
         players = {"O", "X"}
@@ -128,11 +129,10 @@ Module Program
 
             currentPlayer = changeTurn(currentPlayer)
         End While
-
     End Sub
+
     Sub Main(args As String())
         game()
         Console.ReadKey()
     End Sub
-
 End Module
