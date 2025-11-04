@@ -1,5 +1,11 @@
 Imports System
 
+'in furture i would:
+'use arrays for players
+'use an array for win positions and compare
+'allow for more players and varied symbols
+'allow for varied game sizes
+
 Module Program
     Sub printBoard(board(,) As String)
         For i = 0 To 2
