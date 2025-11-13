@@ -1,0 +1,1 @@
+Welcome to my year 12 computer science repository, which is used to store my coding assignments and lesson tasks so that I can both access them on the school computer and the home computer without having to use the awfully slow school Remote VM.
