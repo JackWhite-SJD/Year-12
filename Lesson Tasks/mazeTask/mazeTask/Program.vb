@@ -12,7 +12,7 @@ Module Module1
         Dim bounds As Integer = 10
         Dim board(bounds, bounds) As String, PositionX As Integer = 9, PositionY As Integer = 2, Score As Integer = 0
         Dim YorN As String
-        Dim winPos() As Integer = generateBoard()
+        Dim winPos() = {9, 8}
 
         While True
 
@@ -21,6 +21,7 @@ Module Module1
             PositionX = 9
             PositionY = 2
             board = SetupBoard(board)
+            board = generateBoard(board, 0, 0, {0, 2})
             board(PositionX, PositionY) = Player
             PrintBoard(board, Score)
 
@@ -52,7 +53,7 @@ Module Module1
                         Console.WriteLine("You inputted:" & input.KeyChar & " that is not a valid input for this program.")
                 End Select
 
-                If checkWin(board) Then
+                If checkWin(board, winPos) Then
                     Exit While
                 End If
 
@@ -78,27 +79,24 @@ Module Module1
 
     End Sub
 
-    Function checkWin(Board(,) As String) As Boolean
-        For row As Integer = 0 To 9
-            For column As Integer = 0 To 9
-                If Board(winX, winY) = Player Then
-                    Return True
-                End If
-            Next
-        Next
-
-        Return True
+    Function checkWin(Board(,) As String, winPos() As Integer) As Boolean
+        If Board(winPos(0), winPos(1)) = Player Then
+            Return True
+        End If
+        Return False
     End Function
 
-    Function generateBoard() As Integer()
+    Function generateBoard(board(,) As String, currentDirection As Integer, runCount As Integer, currentPos() As Integer) As String()
+
+        'randomboardGnerator
         Dim vectorArr() As Integer
         Dim randGen As New Random
         Dim xChange As Integer
         Dim yChange As Integer
         Dim length As Integer
 
-        Dim currentDirection As Integer = 0
         Dim newDirection As Integer
+        Dim finalDirection As String
         Dim dirList As New List(Of String)
         dirList.Add("n")
         dirList.Add("e")
@@ -118,7 +116,45 @@ Module Module1
                 dupeListArr = {"n", "w", "e"}
         End Select
 
-        newDirection = randGen.Next(0, 4)
+        newDirection = randGen.Next(0, 3)
+        finalDirection = dupeListArr(newDirection)
+
+        Select Case finalDirection
+            Case "n"
+                If currentPos(1) > 1 Then
+                    length = randGen.Next(1, currentPos(1))
+
+                    xChange = 0
+                    yChange = -1 * length
+                End If
+
+            Case "e"
+                If currentPos(0) < 1 Then
+                    length = randGen.Next(1, currentPos(0))
+
+                    xChange = -1 * length
+                    yChange = 0
+                End If
+            Case "s"
+                If currentPos(1) < 8 Then
+                    length = randGen.Next(1, 8 - currentPos(1))
+
+                    xChange = 0
+                    yChange = 1
+                End If
+            Case "w"
+                If currentPos(1) < 8 Then
+                    length = randGen.Next(1, 8 - currentPos(1))
+
+                    xChange = 1
+                    yChange = 0
+                End If
+        End Select
+
+        currentPos(0) += xChange
+        currentPos(1) += yChange
+
+        board(currentPos(0), currentPos(1)) = Prize
 
     End Function
 
@@ -172,18 +208,6 @@ Module Module1
             For column As Integer = 0 To 9
                 board(row, column) = Wall
             Next
-        Next
-
-        For row As Integer = 2 To 9
-            board(row, 2) = Prize
-        Next
-
-        For row As Integer = 2 To 9
-            board(row, 7) = Prize
-        Next
-
-        For column As Integer = 2 To 7
-            board(2, column) = Prize
         Next
 
         Return board
