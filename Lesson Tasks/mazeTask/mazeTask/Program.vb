@@ -1,6 +1,9 @@
+Imports System
+Imports System.Collections.Generic
 Imports System.ComponentModel
 Imports System.Net.Sockets
 Imports System.Security
+Imports System.Security.Cryptography
 
 Module Module1
     Const Player As String = "O "
@@ -86,6 +89,108 @@ Module Module1
         Return False
     End Function
 
+    Function GenerateOriginShiftBoard(board(,) As String, count As Integer) As String()
+        Dim yChange As Integer
+        Dim xChange As Integer
+        Dim XcurrentPos As Integer
+        Dim yCurrentPos As Integer
+        Dim xNewPos As Integer
+        Dim yNewPos As Integer
+        Dim directionList As New List(Of String)
+        Dim randGen As New Random
+        Dim newDirection As Integer = randGen.Next(0, 4)
+        Dim newDirectionLetter As String
+
+        If count > 100 Then
+            Return board
+        End If
+
+
+        dirList.Add("n")
+        dirList.Add("e")
+        dirList.Add("w")
+        dirList.Add("s")
+
+
+
+        For i = 0 To 10
+            For j = 0 To 10
+                If board(i, j) = "o" Then
+                    XcurrentPos = i
+                    yCurrentPos = j
+                End If
+            Next
+        Next
+
+        Select Case newDirection
+            Case 0
+                xChange = 1
+                yChange = 0
+
+                If XcurrentPos + xChange < 10 Then
+                    xNewPos = XcurrentPos + xChange
+                    yNewPos = yChange + yCurrentPos
+                End If
+
+                newDirectionLetter = "e"
+
+            Case 1
+                xChange = -1
+                yChange = 0
+
+                If XcurrentPos + xChange > 0 Then
+                    xNewPos = XcurrentPos + xChange
+                    yNewPos = yChange + yCurrentPos
+                End If
+
+                newDirectionLetter = "w"
+
+            Case 2
+                xChange = 0
+                yChange = 1
+
+                If yCurrentPos + yChange < 10 Then
+                    yNewPos = XcurrentPos + xChange
+                    yNewPos = yChange + yCurrentPos
+                End If
+
+                newDirectionLetter = "s"
+
+            Case 3
+                xChange = 0
+                yChange = -1
+
+                If yCurrentPos + yChange > 0 Then
+                    yNewPos = XcurrentPos + xChange
+                    yNewPos = yChange + yCurrentPos
+                End If
+
+                newDirectionLetter = "n"
+
+        End Select
+
+        board(XcurrentPos, yCurrentPos) = newDirectionLetter
+        board(xNewPos, yNewPos) = "o"
+
+        count += 1
+
+        Return generateBoard(board, count)
+
+    End Function
+
+    Function generateOriginShiftBoardWalls(board(,) As String) As String()
+        Dim newBoard(10, 10) As String()
+        For i = 0 To 10
+            For j = 0 To 10
+                If board(i, j) = "e" Or board(i, j) = "w" Then
+                    newBoard(i, j) = "-"
+                ElseIf board(i, j) = "n" Or board(i, j) = "s" Then
+                    newBoard(i, j) = " "
+                End If
+            Next
+        Next
+    End Function
+
     Function generateBoard(board(,) As String, currentDirection As Integer, runCount As Integer, currentPos() As Integer) As String()
 
         'randomboardGnerator
@@ -98,6 +203,8 @@ Module Module1
         Dim newDirection As Integer
         Dim finalDirection As String
         Dim dirList As New List(Of String)
+
+
         dirList.Add("n")
         dirList.Add("e")
         dirList.Add("w")
