@@ -2,11 +2,19 @@ Imports System
 
 Module Program
     Sub Main(args As String())
-        Console.WriteLine("Hello World!")
-        Dim board(,) As String = {{"e", "e", "e", "e", "e", "e", "e", "e", "e", "e", "s"}, {"e", "e", "e", "e", "e", "e", "e", "e", "e", "e", "s"}, {"e", "e", "e", "e", "e", "e", "e", "e", "e", "e", "s"}, {"e", "e", "e", "e", "e", "e", "e", "e", "e", "e", "s"}, {"e", "e", "e", "e", "e", "e", "e", "e", "e", "e", "s"}, {"e", "e", "e", "e", "e", "e", "e", "e", "e", "e", "s"}, {"e", "e", "e", "e", "e", "e", "e", "e", "e", "e", "s"}, {"e", "e", "e", "e", "e", "e", "e", "e", "e", "e", "s"}, {"e", "e", "e", "e", "e", "e", "e", "e", "e", "e", "s"}, {"e", "e", "e", "e", "e", "e", "e", "e", "e", "e", "s"}, {"e", "e", "e", "e", "e", "e", "e", "e", "e", "e", "o"}}
-        Dim newBoard(,) As String = GenerateOriginShiftBoard(board, 1, 0)
-        newBoard = generateOriginShiftBoardWalls(newBoard)
-        printBoard(newBoard)
+        Dim board(10, 10) As String
+        Dim visited(10, 10) As Boolean
+        Dim randgen As New Random
+
+    End Sub
+
+    Sub _initializeBoard(ByRef board, ByRef visited)
+        For i = 0 To 10
+            For j = 0 To 10
+                board(i, j) = " "
+                visited(i, j) = False
+            Next
+        Next
     End Sub
 
     Sub printBoard(baord(,) As String)
@@ -17,30 +25,46 @@ Module Program
             Console.WriteLine()
         Next
     End Sub
-    Function GenerateOriginShiftBoard(board(,) As String, count As Integer, lastDirection As String) As String(,)
+    Function GenerateOriginShiftBoard(board(,) As String, visited(,) As Boolean, x As Integer, y As Integer) As String(,)
         Dim yChange As Integer = 0
         Dim xChange As Integer = 0
-        Dim XcurrentPos As Integer = -1
-        Dim yCurrentPos As Integer = -1
         Dim xNewPos As Integer
         Dim yNewPos As Integer
         Static randGen As New Random
+        Dim randomNumber As Integer
+        Dim temp As (Integer, Integer, String)
+
+
         Dim newDirection As Integer
         Dim newDirectionLetter As String
         Dim validMove As Boolean = False
 
-        If count > 1000 Then
-            Return board
-        End If
+        visited(x, y) = True
 
-        For i = 0 To 10
-            For j = 0 To 10
-                If board(i, j) = "o" Then
-                    XcurrentPos = i
-                    yCurrentPos = j
-                End If
-            Next
+        Dim directions As (Integer, Integer, String)() = {(0, -1, "n"), (0, 1, "s"), (1, 0, "e"), (-1, 0, "w")}
+
+        For i = 0 To directions.Length - 1
+            randomNumber = randGen.Next(i, directions.Length)
+            temp = directions(i)
+            directions(i) = directions(randomNumber)
+            directions(randomNumber) = temp
         Next
+
+        For Each direction In directions
+            xChange = direction.Item1
+            yChange = direction.Item2
+
+            xNewPos = x + xChange
+            yNewPos = y + yChange
+
+            If yNewPos >= 0 And yNewPos <= 10 And xNewPos >= 0 And xNewPos <= 10 Then
+                If Not visited(xNewPos, yNewPos) Then
+                    board(xNewPos, yNewPos) = direction.Item3
+                    Return GenerateOriginShiftBoard(board, visited, xNewPos, yNewPos)
+                End If
+            End If
+        Next
+
 
         Do While Not validMove
             newDirection = randGen.Next(0, 4)
