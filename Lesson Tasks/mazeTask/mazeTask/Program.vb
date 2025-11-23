@@ -12,7 +12,7 @@ Module Module1
     Const prize2 As String = "*"
     Const Endpoint As String = "E"
     Const bomb As String = "#"
-    Const bounds As Integer = 30
+    Const bounds As Integer = 20
     Sub Main()
 
 
