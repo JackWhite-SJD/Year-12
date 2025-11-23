@@ -6,35 +6,40 @@ Imports System.Security
 Imports System.Security.Cryptography
 
 Module Module1
-    Const Player As String = "O "
-    Const Wall As String = "X "
+    Const Player As String = "O"
+    Const Wall As String = "X"
     Const Prize As String = "."
+    Const prize2 As String = "*"
     Const Endpoint As String = "E"
-
+    Const bomb As String = "#"
+    Const bounds As Integer = 30
     Sub Main()
-        Dim bounds As Integer = 20
+
 
         Dim board(bounds, bounds) As String
-        Dim startPos() As Integer, PositionX As Integer, PositionY As Integer, Score As Integer, totalScore As Integer
+        Dim startPos() As Integer, PositionX As Integer, PositionY As Integer, Score As Integer, totalScore As Integer = 0, livees As Integer, livesUsed As Integer = 0, ratio As Integer = 0
         totalScore = 0
-        Dim YorN As String
 
 
         While True
 
             ' Run the SetupBoard subroutine and initialise the Player's position
+            Console.Clear()
+            livees = 3
             board = generateNewBoard(board)
-            startPos = getStartPos()
+            startPos = getStartPos(board)
             Score = 0
 
-            PositionX = getStartPos(0)
-            PositionY = getStartPos(1)
-
-            board(PositionX, PositionY) = Player
-            PrintBoard(board, Score)
+            ResetToStart(board, PositionX, PositionY, startPos)
+            printBoard(board)
 
             ' Continued game play
             While True
+                If livees <= 0 Then
+                    Console.WriteLine("Out of lives for this maze, generating new maze.")
+                    Exit While
+                End If
+
                 Dim input As ConsoleKeyInfo
                 input = Console.ReadKey
 
@@ -42,32 +47,41 @@ Module Module1
                 Select Case input.KeyChar
                     Case "w"
                         Console.Clear()
-                        MakeMove(-1, 0, board, Score, PositionX, PositionY, bounds, startPos(0), startPos(1))
+                        MakeMove(-1, 0, board, Score, PositionX, PositionY, bounds, startPos, totalScore, livees, livesUsed)
                         Exit Select
                     Case "a"
                         Console.Clear()
-                        MakeMove(0, -1, board, Score, PositionX, PositionY, bounds, startPos(0), startPos(1))
+                        MakeMove(0, -1, board, Score, PositionX, PositionY, bounds, startPos, totalScore, livees, livesUsed)
                         Exit Select
                     Case "s"
                         Console.Clear()
-                        MakeMove(1, 0, board, Score, PositionX, PositionY, bounds, startPos(0), startPos(1))
+                        MakeMove(1, 0, board, Score, PositionX, PositionY, bounds, startPos, totalScore, livees, livesUsed)
                         Exit Select
                     Case "d"
                         Console.Clear()
-                        MakeMove(0, 1, board, Score, PositionX, PositionY, bounds, startPos(0), startPos(1))
+                        MakeMove(0, 1, board, Score, PositionX, PositionY, bounds, startPos, totalScore, livees, livesUsed)
                         Exit Select
                     Case "f"
                         Console.WriteLine("Final Score :" & totalScore)
                         End
                     Case "r"
                         Exit While
+                    Case "q"
+                        totalScore = 0
+                        livesUsed = 0
+                        Exit While
                     Case Else
                         Console.WriteLine()
                         Console.WriteLine("You inputted:" & input.KeyChar & " that is not a valid input for this program.")
                 End Select
+                Console.WriteLine()
                 Console.WriteLine("Score :" & Score)
-                Console.writeLine("Total Score: " & totalScore)
-                console.writeLine("Press r for a new maze, and f to quit.")
+                Console.WriteLine("Total Score: " & totalScore)
+                If livesUsed >= 1 And totalScore >= 1 Then
+                    Console.WriteLine("Lives:total score :" & Math.Round((totalScore / livesUsed), 2))
+                End If
+
+                Console.WriteLine("Press r for a new maze, q to reset scores and f to quit.")
 
             End While
         End While
@@ -81,40 +95,52 @@ Module Module1
         Return False
     End Function
 
-    Function getStartPos(board(,) As String) As Integer(,)
-        For i = 0 To 20
-            For j = 0 To 20
+    Function getStartPos(board(,) As String) As Integer()
+        For i = 0 To bounds
+            For j = 0 To bounds
                 If board(i, j) = "S" Then
-                    Return (i, j)
+                    Return {i, j}
                 End If
             Next
         Next
     End Function
 
     ' Make a move on the board
-    Sub MakeMove(ByVal XChange, ByVal YChange, ByVal board, ByRef score, ByRef PositionX, ByRef PositionY, ByVal bounds, startX, startY)
+    Sub MakeMove(ByVal XChange, ByVal YChange, ByVal board, ByRef score, ByRef PositionX, ByRef PositionY, ByVal bounds, ByVal startPos, ByRef totalScore, ByRef Lives, ByRef livesUsed)
+
+
         If (board(PositionX + XChange, PositionY + YChange) IsNot Wall) And (PositionX + XChange < bounds) And (PositionY + YChange < bounds) Then
             If board(PositionX + XChange, PositionY + YChange) = Prize Then
                 score += 1
+                totalScore += 1
+            ElseIf board(PositionX + XChange, PositionY + YChange) = prize2 Then
+                score += 3
+                totalScore += 3
+            ElseIf board(PositionX + XChange, PositionY + YChange) = bomb Then
+                score -= 2
+                totalScore -= 2
             End If
             board(PositionX + XChange, PositionY + YChange) = Player
-            board(PositionX, PositionY) = "  "
-            printBoard(board, score)
+            board(PositionX, PositionY) = " "
+            printBoard(board)
             PositionX = PositionX + XChange
             PositionY = PositionY + YChange
         Else
-            board(PositionX, PositionY) = "  "
-            PositionX = startX
-            PositionY = startY
-            board(startX, startY) = Player
+            Lives -= 1
+            livesUsed += 1
+            board(PositionX, PositionY) = " "
+            PositionX = startPos(0)
+            PositionY = startPos(1)
+            board(startPos(0), startPos(1)) = Player
 
-            printBoard(board, score)
+            printBoard(board)
 
-            Console.WriteLine("You loose.")
+            Console.WriteLine("Reset Position, lives for map left:" & Lives)
         End If
     End Sub
 
     Function generateNewBoard(board(,) As String) As String(,)
+        Dim visited(bounds / 2, bounds / 2) As Boolean
         _initializeBoard(board, visited)
         board = GenerateOriginShiftBoard(board, visited, 0, 0, 0)
         board = placeStartAndEnd(board)
@@ -124,7 +150,7 @@ Module Module1
 
     Function placeStartAndEnd(board(,) As String) As String(,)
         board(0, 0) = "o"
-        board(10, 10) = "x"
+        board(bounds / 2, bounds / 2) = "x"
         Return board
     End Function
 
@@ -155,7 +181,7 @@ Module Module1
             xNewPos = x + xChange
             yNewPos = y + yChange
 
-            If yNewPos >= 0 And yNewPos <= 10 And xNewPos >= 0 And xNewPos <= 10 Then
+            If yNewPos >= 0 And yNewPos <= bounds / 2 And xNewPos >= 0 And xNewPos <= bounds / 2 Then
                 If Not visited(yNewPos, xNewPos) Then
                     board(yNewPos, xNewPos) = direction.Item3
                     GenerateOriginShiftBoard(board, visited, xNewPos, yNewPos, count)
@@ -166,19 +192,26 @@ Module Module1
         Return board
     End Function
 
+    Sub ResetToStart(ByRef board(,) As String, ByRef posX As Integer, ByRef posY As Integer, startPos() As Integer)
+        board(posX, posY) = " "
+        posX = startPos(0)
+        posY = startPos(1)
+        board(posX, posY) = "O"
+    End Sub
+
 
     Function generateOriginShiftWalls(origBoard(,) As String) As String(,)
-        Dim newBoard(20, 20) As String
+        Dim newBoard(bounds, bounds) As String
         Dim currentX As Integer
         Dim currentY As Integer
         Dim randGen As New Random
         Dim RandNum As Integer
         Dim randNum2 As Integer
 
-        For i = 0 To 20
-            For j = 0 To 20
+        For i = 0 To bounds
+            For j = 0 To bounds
                 RandNum = randGen.Next(0, 6)
-                If i > 1 And i < 19 And j > 1 And j < 19 Then
+                If i > 1 And i < bounds - 1 And j > 1 And j < bounds - 1 Then
                     If RandNum = 2 Then
                         newBoard(i, j) = " "
                     Else
@@ -190,8 +223,8 @@ Module Module1
             Next
         Next
 
-        For i = 1 To 9
-            For j = 1 To 9
+        For i = 1 To (bounds / 2) - 1
+            For j = 1 To (bounds / 2) - 1
                 currentX = i * 2
                 currentY = j * 2
                 newBoard(currentY, currentX) = " "
@@ -209,29 +242,43 @@ Module Module1
             Next
         Next
 
-        RandNum = randGen.Next(5, 15)
-        randNum2 = randGen.Next(5, 15)
-        newBoard(RandNum, randNum2) = "S"
-        newBoard(RandNum + 1, randNum2) = " "
-        newBoard(RandNum, randNum2 - 1) = " "
-
-        'ensures atleast 1 point can be scored per board
-
-        For i = 0 To 5
-            RandNum = randGen.Next(1, 19)
-            randNum2 = randGen.Next(1, 19)
+        For i = 0 To Math.Round(bounds * 0.35)
+            RandNum = randGen.Next(1, bounds - 1)
+            randNum2 = randGen.Next(1, bounds - 1)
             newBoard(RandNum, randNum2) = "."
             newBoard(RandNum + 1, randNum2) = " "
             newBoard(RandNum, randNum2 - 1) = " "
         Next
-        newBoard(19, 19) = "."
+
+        For i = 0 To Math.Round(bounds * 0.2)
+            RandNum = randGen.Next(1, bounds - 1)
+            randNum2 = randGen.Next(1, bounds - 1)
+            newBoard(RandNum, randNum2) = "*"
+            newBoard(RandNum + 1, randNum2) = " "
+            newBoard(RandNum, randNum2 - 1) = " "
+        Next
+
+        For i = 0 To Math.Round(bounds * 0.24)
+            RandNum = randGen.Next(1, bounds - 1)
+            randNum2 = randGen.Next(1, bounds - 1)
+            newBoard(RandNum, randNum2) = "#"
+            newBoard(RandNum + 1, randNum2) = " "
+            newBoard(RandNum, randNum2 - 1) = " "
+        Next
+        newBoard(bounds - 1, bounds - 1) = "."
+
+        RandNum = randGen.Next(Math.Round((bounds * 0.25), 0), Math.Round(bounds * 0.75))
+        randNum2 = randGen.Next(Math.Round((bounds * 0.25), 0), Math.Round(bounds * 0.75))
+        newBoard(RandNum, randNum2) = "S"
+        newBoard(RandNum + 1, randNum2) = " "
+        newBoard(RandNum, randNum2 - 1) = " "
+
         Return newBoard
     End Function
 
-    ' Output the contents of the board array
     Sub printBoard(baord(,) As String)
-        For i = 0 To 20
-            For j = 0 To 20
+        For i = 0 To bounds
+            For j = 0 To bounds
                 Console.Write(baord(i, j))
             Next
             Console.WriteLine()
@@ -240,8 +287,8 @@ Module Module1
 
     ' Setup the board array
     Sub _initializeBoard(ByRef board, ByRef visited)
-        For i = 0 To 10
-            For j = 0 To 10
+        For i = 0 To Math.Round(bounds / 2)
+            For j = 0 To Math.Round(bounds / 2)
                 board(i, j) = " "
                 visited(i, j) = False
             Next
