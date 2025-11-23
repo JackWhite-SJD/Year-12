@@ -22,9 +22,9 @@ Module Program
     End Sub
 
     Sub printBoard(baord(,) As String)
-        For i = 0 To 10
-            For j = 0 To 10
-                Console.Write(baord(i, j) + ".")
+        For i = 0 To 20
+            For j = 0 To 20
+                Console.Write(baord(i, j))
             Next
             Console.WriteLine()
         Next
@@ -44,9 +44,9 @@ Module Program
         Dim randomNumber As Integer
         Dim temp As (Integer, Integer, String)
         count += 1
-        visited(x, y) = True
+        visited(y, x) = True
 
-        Dim directions As (Integer, Integer, String)() = {(0, -1, "n"), (0, 1, "s"), (1, 0, "e"), (-1, 0, "w")}
+        Dim directions As (Integer, Integer, String)() = {(-1, 0, "n"), (1, 0, "s"), (0, 1, "e"), (0, -1, "w")}
 
         For i = 0 To directions.Length - 1
             randomNumber = randGen.Next(i, directions.Length)
@@ -63,30 +63,43 @@ Module Program
             yNewPos = y + yChange
 
             If yNewPos >= 0 And yNewPos <= 10 And xNewPos >= 0 And xNewPos <= 10 Then
-                If Not visited(xNewPos, yNewPos) Or count <= 50 Then
-                    board(xNewPos, yNewPos) = direction.Item3
-                    Return GenerateOriginShiftBoard(board, visited, xNewPos, yNewPos, count)
-                Else
-                    Return board
+                If Not visited(yNewPos, xNewPos) Then
+                    board(yNewPos, xNewPos) = direction.Item3
+                    GenerateOriginShiftBoard(board, visited, xNewPos, yNewPos, count)
                 End If
             End If
-
         Next
+
+        Return board
     End Function
 
+
     Function generateOriginShiftWalls(origBoard(,) As String) As String(,)
-        Dim newBoard(10, 10) As String
-        For i = 0 To 10
-            For j = 0 To 10
+        Dim newBoard(20, 20) As String
+        Dim currentX As Integer
+        Dim currentY As Integer
+
+        For i = 0 To 20
+            For j = 0 To 20
+                newBoard(i, j) = "#"
+            Next
+        Next
+
+        For i = 1 To 9
+            For j = 1 To 9
+                currentX = i * 2
+                currentY = j * 2
+                newBoard(currentY, currentX) = " "
+
                 Select Case origBoard(i, j)
-                    Case "n", "s"
-                        newBoard(i, j) = "."
-                    Case "e", "w"
-                        newBoard(i, j) = "."
-                    Case "o", "x"
-                        newBoard(i, j) = origBoard(i, j)
-                    Case Else
-                        newBoard(i, j) = "@"
+                    Case "n"
+                        newBoard(currentY - 1, currentX) = " "
+                    Case "s"
+                        newBoard(currentY + 1, currentX) = " "
+                    Case "w"
+                        newBoard(currentY, currentX - 1) = " "
+                    Case "e"
+                        newBoard(currentY, currentX + 1) = " "
                 End Select
             Next
         Next
