@@ -78,10 +78,22 @@ Module Program
         Dim newBoard(20, 20) As String
         Dim currentX As Integer
         Dim currentY As Integer
+        Dim randGen As New Random
+        Dim RandNum As Integer
+        Dim randNum2 As Integer
 
         For i = 0 To 20
             For j = 0 To 20
-                newBoard(i, j) = "#"
+                RandNum = randGen.Next(0, 6)
+                If i > 1 And i < 19 And j > 1 And j < 19 Then
+                    If RandNum = 2 Then
+                        newBoard(i, j) = " "
+                    Else
+                        newBoard(i, j) = "X"
+                    End If
+                Else
+                    newBoard(i, j) = "X"
+                End If
             Next
         Next
 
@@ -103,6 +115,23 @@ Module Program
                 End Select
             Next
         Next
+
+        RandNum = randGen.Next(5, 15)
+        randNum2 = randGen.Next(5, 15)
+        newBoard(RandNum, randNum2) = "S"
+        newBoard(RandNum + 1, randNum2) = " "
+        newBoard(RandNum, randNum2 - 1) = " "
+
+        'ensures atleast 1 point can be scored per board
+
+        For i = 0 To 5
+            RandNum = randGen.Next(1, 19)
+            randNum2 = randGen.Next(1, 19)
+            newBoard(RandNum, randNum2) = "."
+            newBoard(RandNum + 1, randNum2) = " "
+            newBoard(RandNum, randNum2 - 1) = " "
+        Next
+        newBoard(19, 19) = "."
         Return newBoard
     End Function
 
