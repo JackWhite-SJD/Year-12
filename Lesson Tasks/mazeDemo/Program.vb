@@ -35,6 +35,7 @@ Module Program
         board(10, 10) = "x"
         Return board
     End Function
+
     Function GenerateOriginShiftBoard(board(,) As String, visited(,) As Boolean, x As Integer, y As Integer, count As Integer) As String(,)
         Dim yChange As Integer = 0
         Dim xChange As Integer = 0
