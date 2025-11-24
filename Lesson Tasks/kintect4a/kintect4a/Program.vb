@@ -179,8 +179,72 @@ Module Program
         End While
     End Sub
 
+    Sub vsComputer()
+        Dim gottenGridzize = getGrid()
+        globalWidth = gottenGridzize(1)
+        globalHeight = gottenGridzize(0)
+        Dim board(,) As String = _initializeBoard()
+        Dim currentPlayer As String
+
+        currentPlayer = "X"
+
+        While True
+            Console.WriteLine("It is player " & currentPlayer & " 's turn.")
+            If currentPlayer = "X" Then
+                board = turn(currentPlayer, board)
+            Else
+                board = computerTurn(currentPlayer, board)
+                Console.ReadLine()
+            End If
+
+            Console.WriteLine()
+            printBoard(board)
+            If checkWin(currentPlayer, board) Then
+                Console.WriteLine("Winner: " & currentPlayer)
+                Exit While
+            ElseIf checkDraw(board) Then
+                Console.WriteLine("It's a draw!")
+                Exit While
+            End If
+
+            currentPlayer = changeTurn(currentPlayer)
+        End While
+    End Sub
+
+    Function computerTurn(player As String, board(,) As String) As String(,)
+        Dim col As Integer = 0
+        Dim row As Integer = 0
+        Dim randGen As Random = New Random
+        While True
+            While True
+                Try
+                    col = randGen.Next(1, globalWidth + 1)
+                    If col >= 1 And col <= globalWidth + 1 Then
+                        Exit While
+                    End If
+                Catch ex As Exception
+                    Console.WriteLine("nAn")
+                End Try
+            End While
+            If validSpace(col - 1, board) <> 999999 Then
+                Console.Writeline("The compuet has chosen :" & col)
+                Exit While
+            End If
+        End While
+
+        board(validSpace(col - 1, board), col - 1) = player
+        Return board
+    End Function
+
     Sub Main(args As String())
-        game()
+        Console.Writeline("(1) pvp or (2) pve")
+        Dim choice As String = Console.ReadLine()
+        If choice = "1" Then
+            game()
+        Else
+            vsComputer()
+        End If
+
         Console.ReadLine()
     End Sub
 End Module
