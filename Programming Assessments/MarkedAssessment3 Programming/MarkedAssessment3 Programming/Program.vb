@@ -8,7 +8,6 @@ Module Program
         Dim num2 As String
         Dim total As Decimal
 
-
         Console.WriteLine("Enter inputted unsigned binary.")
         input = Console.ReadLine()
         choice = input.Split(".")
