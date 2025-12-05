@@ -5,6 +5,7 @@ Imports System.Reflection.Emit
 Module Program
     Sub Main(args As String())
         Dim nth As Int16
+        Dim calculated() As BigInteger
         While True
             Try
                 Console.WriteLine("Enter fibonnaic position:")
@@ -25,7 +26,7 @@ Module Program
         Console.WriteLine(elapsedTime)
 
         Dim startTimeb As Long = Stopwatch.GetTimestamp()
-        Console.WriteLine("Fibonacci at positon " & nth & " : " & Convert.ToString(finbonacci(0, nth - 3, {0, 1, 1})))
+        Console.WriteLine("Fibonacci at positon " & nth & " : " & Convert.ToString(finbonaccib(0, nth - 2, 0, 1)))
         Dim elapsedTimeb As TimeSpan = Stopwatch.GetElapsedTime(startTimeb)
         Console.WriteLine(elapsedTimeb)
     End Sub
