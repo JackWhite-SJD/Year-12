@@ -9,10 +9,10 @@ Module Program
             Try
                 Console.WriteLine("Enter fibonnaic position:")
                 nth = Integer.Parse(Console.ReadLine())
-                If nth > 0 And nth < 7411 Then
+                If nth > 0 And nth < 7400 Then
                     Exit While
                 Else
-                    Console.WriteLine("Needs to be a positive integer number and less than 7411, try again.")
+                    Console.WriteLine("Needs to be a positive integer number and less than 7400, try again.")
                 End If
             Catch ex As Exception
                 Console.WriteLine("nAn try again.")
