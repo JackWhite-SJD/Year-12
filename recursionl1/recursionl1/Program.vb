@@ -42,7 +42,7 @@ Module Program
         End If
     End Function
 
-    Function finbonaccib(current As Int16, final As Int16, num1 As Integer, num2 As Integer) As BigInteger
+    Function finbonaccib(current As Int16, final As Int16, num1 As BigInteger, num2 As BigInteger) As BigInteger
         If current = final Then
             Return num2
         Else
