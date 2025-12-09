@@ -58,18 +58,24 @@ Module Program
     End Sub
 
     Sub chl5(path As String)
-        Dim scores As String
+        Dim scores() As Integer
         Dim added As Boolean
-        Dim count As Integer
-
+        Dim count As Integer = 1
+        Dim number As Integer
+        Dim lines() As String
         Using sr As New System.IO.StreamReader(path)
+            scores(0) = 22456
             While sr.Peek() >= 0
                 Dim line As String = sr.ReadLine()
+                lines(count) = line
+                scores(count) = Integer.Parse(line.Substring(0, 5))
                 count += 1
-                If count >= 3275 And count <= 3278 Then
-                    Console.WriteLine(line)
-                End If
             End While
+
         End Using
     End Sub
+
+    Function bubbleSort(arr() As Integer)
+
+    End Function
 End Module
