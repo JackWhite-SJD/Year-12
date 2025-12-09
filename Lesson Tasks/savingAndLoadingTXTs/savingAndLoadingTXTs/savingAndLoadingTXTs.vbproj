@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>savingAndLoadingTXTs</RootNamespace>
+    <TargetFramework>net8.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="bin\Debug\christmascarol.txt" />
+    <None Include="bin\Debug\reindeerscores.txt" />
+  </ItemGroup>
+
+</Project>
