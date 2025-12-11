@@ -15,7 +15,7 @@ namespace consultationProgrammingTask2SdntScores
     {
         static void Main(string[] args)
         {
-            //createPeople();
+            createPeople();
             List<Dictionary<string, double[,]>> allStudents= getStudents(getNames());
             outputData(allStudents);
         }
