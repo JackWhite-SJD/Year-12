@@ -16,10 +16,6 @@ Module Program
         'chl3(carolPath)
 
         ' chl4 = chl1(reindeerPath)
-        Using sw As New StreamWriter(carolPath, True)
-            sw.WriteLine("")
-            sw.Write("")
-        End Using
 
     End Sub
 
@@ -79,3 +75,30 @@ Module Program
 
     End Function
 End Module
+
+
+Sub dataWriteToFileForStudentData()
+    Dim currentStudentKey As Integer = 0
+
+End Sub
+
+Function getData(ref currentStudentKey As Integer)
+
+    Dim path As String = Directory.GetCurrentDirectory() + "\\file.txt"
+    Dim allLines() As String = File.ReadAllLines(path, True)
+    Dim currentStudentData() As String
+    Dim studentData() As (Integer, String, String, Integer)
+    Dim student As String
+
+    For i = 0 To allLines.Length()
+        currentStudentData(i) = allLines(i).split(":")
+
+
+    Next
+
+End Function
+
+
+Sub addData(ref currentStudentKey As Integer)
+
+End Sub
