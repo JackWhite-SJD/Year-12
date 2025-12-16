@@ -93,7 +93,6 @@ Function getData(ref currentStudentKey As Integer)
     For i = 0 To allLines.Length()
         currentStudentData(i) = allLines(i).split(":")
 
-
     Next
 
 End Function
