@@ -7,51 +7,45 @@ namespace _3LongestsubstringWithoutRepeats
     {
         static void Main(string[] args)
         {
-            int max = LengthOfLongestSubstring("bbbb");
-
+            int max = LengthOfLongestSubstring("pwwke");
+            Console.WriteLine(max);
         }
 
         public static int LengthOfLongestSubstring(string s)
         {
-            Dictionary<string, int> characters = new Dictionary<string, int>();
-            Dictionary<int,string> strings = new Dictionary<int,string>();
-            int count = 0;
-            int maxCount = 0;
-            string spaces = " ";
-
-            string newstring = "";
-            foreach (char c in s) 
+            List<string> substringslist = new List<string>();
+            int maxLength = 0;
+            string longestString = "";
+            for (int i = 0; i < s.Length; i++)
             {
-                if (!characters.ContainsKey(c.ToString()))
-                {
-                    newstring += c;
-                    count += 1;
-                    characters.Add(c.ToString(), 1);
-                    spaces += " ";
-                }
-                else
-                {
-                    strings.Add(count,newstring + spaces);
-                    spaces += " ";
-                    if(count > maxCount)
-                    {
-                        maxCount = count;
-                    }
-                    count = 0;
-                    newstring = "";
-                    characters = new Dictionary<string, int>();
-                }
-                
+                string currentSubstring = "";
 
+                for (int j = i; j < s.Length; j++)
+                {
+                    if (currentSubstring.Contains(s[j]))
+                        break;
+
+                    currentSubstring += s[j];
+                    substringslist.Add(currentSubstring);
+
+                    if (currentSubstring.Length > maxLength)
+                        maxLength = currentSubstring.Length;
+                }
             }
 
-            foreach (KeyValuePair<int, string> kvp in strings)
+            
+
+            foreach (string substring in substringslist)
             {
-                Console.WriteLine($"Key: {kvp.Key}, Value: {kvp.Value}");
+                if (substring.Length > maxLength)
+                {
+                    maxLength = substring.Length;
+                    longestString = substring;
+                }
             }
 
-
-            return maxCount;
+            return maxLength;
         }
+
     }
 }
