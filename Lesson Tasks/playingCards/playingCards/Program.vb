@@ -182,34 +182,5 @@ Module Program
 
     Sub Main(args As String())
         Console.WriteLine("Hello World!")
-
-        Dim cards As List(Of playingCard) = New List(Of playingCard)
-        Dim suits() As String = {"diamonds", "hearts", "spades", "clubs"}
-
-        For i As Integer = 1 To 4
-            For j As Integer = 1 To 13
-                If j = 11 Then
-                    cards.Add(New playingCard(i, j))
-                ElseIf j = 12 Then
-                    cards.Add(New playingCard(i, j))
-                ElseIf j = 13 Then
-                    cards.Add(New playingCard(i, j))
-                ElseIf j = 1 Then
-                    cards.Add(New playingCard(i, j))
-                Else
-                    cards.Add(New playingCard(i, j))
-                End If
-            Next
-        Next
-
-        For i = 0 To 51
-            Console.WriteLine(cards(i).getIntSuit())
-            Console.WriteLine(cards(i).getIntValue())
-            Console.WriteLine(cards(i).getStrSuit())
-            Console.WriteLine(cards(i).getStrValue())
-            Console.WriteLine()
-        Next
-
-
     End Sub
 End Module
