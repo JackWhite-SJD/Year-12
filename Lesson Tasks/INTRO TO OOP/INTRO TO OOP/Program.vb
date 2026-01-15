@@ -24,6 +24,12 @@ Module Program
 
     End Class
 
+    Class Owner
+        Private pets As List(Of Animal)
+
+
+    End Class
+
     Class Penguin
         Inherits Animal ' child class of Animal, can access properties and methds of Animal.
 
