@@ -103,7 +103,7 @@ Module Program
             Dim newlst As List(Of playingCard) = New List(Of playingCard)
 
             For i = 0 To lengthOflist
-                If i <> elm Then
+                If i <> elm Then '
                     newlst.Add(_remainingCards(i))
                 End If
             Next
