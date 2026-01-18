@@ -1,4 +1,5 @@
 Imports System
+Imports INTRO_TO_OOP.Program
 
 Module Program
     '   -----------------------------------------------------------------
@@ -25,9 +26,39 @@ Module Program
     End Class
 
     Class Owner
-        Private pets As List(Of Animal)
+        Private Animals As List(Of Animal)
+
+        Public Sub AddAnimal()
+            Dim finished As Boolean = False
+
+            Do Until finished = True
+                Console.WriteLine("What kind of animal would you like to add?")
+                Console.WriteLine("1. Dog")
+                Console.WriteLine("2. Cat")
+                Console.WriteLine("3. Penguin")
+
+                Dim response As String = Console.ReadLine()
+
+                If response = "1" Then
+                    Dim Dog As New Dog
+                    Animals.Add(Dog)
+                ElseIf response = "2" Then
+                    Dim Cat As New Cat
+                    Animals.Add(Cat)
+                Else
+                    Dim penguin As New Penguin
+                    Animals.Add(penguin)
+                End If
 
 
+                Console.WriteLine("Would you like to add another animal?")
+                response = Console.ReadLine()
+
+                If response.ToLower = "no" Then
+                    finished = True
+                End If
+            Loop
+        End Sub
     End Class
 
     Class Penguin
@@ -39,9 +70,23 @@ Module Program
 
     End Class
 
+    Class Dog
+        Inherits Animal ' child class of Animal, can access properties and methds of Animal.
 
+        Public Overrides Sub makeNoise() 'process called polymorphism.
+            Console.WriteLine("Bark")
+        End Sub
+    End Class
+
+    Class Cat
+        Inherits Animal ' child class of Animal, can access properties and methds of Animal.
+
+        Public Overrides Sub makeNoise() 'process called polymorphism.
+            Console.WriteLine("Meow")
+        End Sub
+    End Class
     Sub Main(args As String())
-        Dim penguin As New Penguin
-        penguin.setName("Pingu")
+        Dim penguin As New Owner
+        penguin.AddAnimal()
     End Sub
 End Module
