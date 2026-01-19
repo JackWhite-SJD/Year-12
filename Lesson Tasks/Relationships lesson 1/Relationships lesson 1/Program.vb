@@ -32,7 +32,7 @@ Module Program
         End Function
 
         Public Sub addVegetable(ByVal value As vegetable)
-            If _currentNumber <= _capacity Then
+            If _currentNumber < _capacity Then
                 _currentNumber += 1
                 _vegieList.Add(value)
             Else
@@ -66,7 +66,7 @@ Module Program
         End Sub
 
         Public Sub addBox(ByVal value As box)
-            If _currentNumber <= _capacity Then
+            If _currentNumber < _capacity Then
                 _currentNumber += 1
                 _boxes.Add(value)
             Else
@@ -119,6 +119,8 @@ Module Program
 
         Console.WriteLine(newBoxCarrot.getCapacity())
         newBoxCarrot.printVegetableList()
+
+        Console.WriteLine()
 
         Dim c As crate = New crate(10)
         c.addBox(newBoxCarrot)
