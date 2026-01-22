@@ -6,9 +6,11 @@ Module Program
         Private _name As String
         Private _symbol As String
         Private _score As Integer
+        Private _colour As ConsoleColor
 
-        Public Sub New(ByVal name As String, ByVal symbol As String)
-            _name = name
+        Public Sub New(ByVal symbol As String, ByVal colour As ConsoleColor)
+            _name = setName()
+            _colour = colour
             _symbol = symbol
             _score = 0
         End Sub
@@ -28,6 +30,11 @@ Module Program
         Public Sub incrementScore()
             _score += 1
         End Sub
+
+        Private Function setName()
+            Console.WriteLine("Enter Name:")
+            Return Console.ReadLine()
+        End Function
 
         Public Function turn() As Integer()
             Console.WriteLine("Enter a row, col in : row,col form")
@@ -75,6 +82,10 @@ Module Program
             Return board
         End Function
 
+
+        Public Sub ChangeCell(symbol As String, y As Integer, x As Integer)
+            _ArrOfCells(y - 1, x - 1).updateCell(symbol)
+        End Sub
         Public Function getBoard() As cell(,)
             Return _ArrOfCells
         End Function
@@ -86,10 +97,53 @@ Module Program
     End Class
     Class game
         Private _leaderBoard As leaderBoard
-        Private _arrOfPlayers() As Player
+        Private _listOfPlayer As List(Of Player)
         Private _currentBoard As board
         Private _currentPlayer As Player
+        Private _listOfSymbols As List(Of String)
+        Private _listOfColours As List(Of ConsoleColor)
 
+        Public Sub New()
+            _leaderBoard = New leaderBoard
+            _listOfPlayer = New List(Of Player)
+            _currentBoard = New board(initBoardSize)
+            initSymbols()
+            initColours()
+        End Sub
+
+        Private Sub initColours()
+            _listOfColours.Add(ConsoleColor.Blue)
+            _listOfColours.Add(ConsoleColor.Green)
+            _listOfColours.Add(ConsoleColor.Magenta)
+            _listOfColours.Add(ConsoleColor.Red)
+            _listOfColours.Add(ConsoleColor.Yellow)
+        End Sub
+        Private Sub initSymbols()
+            _listOfSymbols.Add("X")
+            _listOfSymbols.Add("O")
+            _listOfSymbols.Add("Y")
+            _listOfSymbols.Add("G")
+            _listOfSymbols.Add("R")
+        End Sub
+
+        Public Sub initPlayers()
+            Dim noOfPlayers As Integer
+            Console.WriteLine("How many players would you like?:")
+            noOfPlayers = Integer.Parse(Console.ReadLine())
+
+            For i = 0 To noOfPlayers
+                Dim nplayer As New Player(_listOfSymbols(i), _listOfColours(i))
+                _listOfPlayer.Add(nplayer)
+            Next
+        End Sub
+
+        Private Function initBoardSize()
+            Console.WriteLine("Enter a row, col in : row,col form")
+            Dim xy() As String = Console.ReadLine().Split(",")
+            Dim x As Integer = xy(1)
+            Dim y As Integer = xy(0)
+            Return {x, y}
+        End Function
 
     End Class
 
