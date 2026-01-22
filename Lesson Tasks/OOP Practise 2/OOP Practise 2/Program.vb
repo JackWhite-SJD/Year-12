@@ -37,7 +37,7 @@ Module Program
         End Function
 
         Public Function turn() As Integer()
-            Console.WriteLine("Enter a row, col in : row,col form")
+            Console.WriteLine("Enter a row, col in : col,row form")
             Dim xy() As String = Console.ReadLine().Split(","c)
             Dim x As Integer = Integer.Parse(xy(1))
             Dim y As Integer = Integer.Parse(xy(0))
@@ -191,6 +191,7 @@ Module Program
         End Sub
 
     End Class
+
 
     Sub Main(args As String())
         Dim mygame As New game
