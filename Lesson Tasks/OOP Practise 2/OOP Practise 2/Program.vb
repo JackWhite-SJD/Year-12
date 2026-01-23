@@ -192,7 +192,6 @@ Module Program
 
     End Class
 
-
     Sub Main(args As String())
         Dim mygame As New game
         mygame.outputBoard()
