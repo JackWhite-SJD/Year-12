@@ -53,12 +53,12 @@ Module Program
         Private _colour As ConsoleColor
 
         Public Sub New()
-            _value = " "
+            _value = "x"
             _colour = ConsoleColor.Black
         End Sub
 
         Public Sub updateCell(value As String, colour As ConsoleColor)
-            _value = value
+            _value = value.ToString()
             _colour = colour
         End Sub
 
@@ -80,7 +80,7 @@ Module Program
             _ArrOfCells = generateBaord(_size(1) - 1, _size(0) - 1)
         End Sub
 
-        Public Function generateBaord(ByVal x As Integer, ByVal y As Integer) As cell(,)
+        Private Function generateBaord(ByVal x As Integer, ByVal y As Integer) As cell(,)
             Dim board(y, x) As cell
             For i = 0 To y
                 For j = 0 To x
@@ -92,7 +92,7 @@ Module Program
         End Function
 
         Public Sub ChangeCell(symbol As String, y As Integer, x As Integer, colour As ConsoleColor)
-            _ArrOfCells(y - 1, x - 1).updateCell(symbol, colour)
+            _ArrOfCells(y, x - 1).updateCell(symbol, colour)
         End Sub
 
         Public Function getSize() As Integer()
@@ -173,7 +173,7 @@ Module Program
         Public Function checkDraw(board(,) As cell) As Boolean
             For i = 0 To _size(0)
                 For j = 0 To _size(1)
-                    If board(i, j).getCellValue() = " " Then
+                    If board(i, j).getCellValue() = "x" Then
                         Return False
                     End If
                 Next
@@ -182,8 +182,11 @@ Module Program
         End Function
 
         Public Function getYval(ByVal x As Integer) As Integer
-            For i = _ArrOfCells.GetLength(0) - 1 To 0
-                If _ArrOfCells(i, x).getCellValue() = " " Then
+            For i = _ArrOfCells.GetLength(0mmit) - 1 To 0 Step -1
+                Console.WriteLine(_ArrOfCells(i, x).getCellValue())
+                Console.WriteLine(i)
+                If _ArrOfCells(i, x).getCellValue() = "x" Then
+                    Console.WriteLine(i)
                     Return i
                 End If
             Next
@@ -267,13 +270,13 @@ Module Program
 
         Public Sub turn()
             Dim x As Integer = _currentPlayer.turn()
-            _currentBoard.ChangeCell(_currentPlayer.getSymbol(), _currentBoard.getYval(x) - 1, x, _currentPlayer.getColour())
+            _currentBoard.ChangeCell(_currentPlayer.getSymbol(), _currentBoard.getYval(x), x, _currentPlayer.getColour())
             changeTurn()
             outputBoard()
         End Sub
 
         Public Sub changeTurn()
-            If _currentPlayerIndex = -_noOfPlayers Then
+            If _currentPlayerIndex = _listOfPlayer.Count() - 1 Then
                 _currentPlayerIndex = 0
             Else
                 _currentPlayerIndex += 1
@@ -281,14 +284,38 @@ Module Program
             _currentPlayer = _listOfPlayer(_currentPlayerIndex)
         End Sub
 
+        Public Sub match()
+            outputBoard()
+            While True
+                If _currentBoard.checkWin(_currentPlayer, _currentBoard.getBoard()) Then
+                    win(_currentPlayer)
+                    Exit While
+                End If
+
+                If _currentBoard.checkDraw(_currentBoard.getBoard()) Then
+                    draw()
+                    Exit While
+                End If
+                Console.WriteLine("It is " + _currentPlayer.getName() + "'s turn now.")
+                turn()
+            End While
+
+        End Sub
+
+        Private Sub win(winner As Player)
+            Console.WriteLine("Welldone," + winner.getName() + ", you win, the rest of you are terrible at kinect 4.")
+            winner.incrementScore()
+        End Sub
+
+        Private Sub draw()
+            Console.WriteLine("No one wins, womp womp.")
+        End Sub
 
     End Class
 
     Sub Main(args As String())
-        Dim mygame As New game
-        mygame.outputBoard()
-        mygame.turn()
+        Dim mygame As New game()
+        mygame.match()
         Console.ReadLine()
     End Sub
-
 End Module
