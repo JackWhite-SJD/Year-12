@@ -42,7 +42,7 @@ Module Program
 
         Public Function turn() As Integer
             Console.WriteLine("Enter a collum")
-            Dim x As Integer = Integer.Parse(Console.ReadLine())
+            Dim x As Integer = Integer.Parse(Console.ReadLine()) - 1
             Return x
         End Function
 
@@ -92,7 +92,7 @@ Module Program
         End Function
 
         Public Sub ChangeCell(symbol As String, y As Integer, x As Integer, colour As ConsoleColor)
-            _ArrOfCells(y, x - 1).updateCell(symbol, colour)
+            _ArrOfCells(y, x).updateCell(symbol, colour)
         End Sub
 
         Public Function getSize() As Integer()
@@ -133,7 +133,7 @@ Module Program
 
             For l = _ArrOfCells.GetLength(0) - 1 To 0 Step -1
                 For c = 0 To _ArrOfCells.GetLength(1) - 1
-                    If l >= 4 Then
+                    If l >= 3 Then
                         If board(l, c).getCellValue() = player.getSymbol() And board(l - 1, c).getCellValue() = player.getSymbol() And board(l - 2, c).getCellValue() = player.getSymbol() And board(l - 3, c).getCellValue() = player.getSymbol() Then
                             win = True
                             Exit For
@@ -141,20 +141,20 @@ Module Program
                     End If
 
                     If c <= _size(1) - 4 Then
-                        If board(l, c).getCellValue() = player.getSymbol() And board(l, c + 1).getCellValue() = player.getSymbol() And board(l, c + 2).getCellValue() = player.getSymbol And board(l, c + 3).getCellValue() = player.getSymbol() Then
+                        If board(l, c).getCellValue() = player.getSymbol() And board(l, c + 1).getCellValue() = player.getSymbol() And board(l, c + 2).getCellValue() = player.getSymbol() And board(l, c + 3).getCellValue() = player.getSymbol() Then
                             win = True
                             Exit For
                         End If
                     End If
 
-                    If l >= 4 And c <= _size(1) - 4 Then
+                    If l >= 3 And c <= _size(1) - 4 Then
                         If board(l, c).getCellValue() = player.getSymbol() And board(l - 1, c + 1).getCellValue() = player.getSymbol() And board(l - 2, c + 2).getCellValue() = player.getSymbol() And board(l - 3, c + 3).getCellValue() = player.getSymbol() Then
                             win = True
                             Exit For
                         End If
                     End If
 
-                    If l >= 4 And c >= 4 Then
+                    If l >= 3 And c >= 3 Then
                         If board(l, c).getCellValue() = player.getSymbol() And board(l - 1, c - 1).getCellValue() = player.getSymbol() And board(l - 2, c - 2).getCellValue() = player.getSymbol() And board(l - 3, c - 3).getCellValue() = player.getSymbol() Then
                             win = True
                             Exit For
@@ -171,8 +171,8 @@ Module Program
         End Function
 
         Public Function checkDraw(board(,) As cell) As Boolean
-            For i = 0 To _size(0)
-                For j = 0 To _size(1)
+            For i = 0 To _ArrOfCells.GetLength(0) - 1
+                For j = 0 To _ArrOfCells.GetLength(1) - 1
                     If board(i, j).getCellValue() = "x" Then
                         Return False
                     End If
@@ -182,15 +182,16 @@ Module Program
         End Function
 
         Public Function getYval(ByVal x As Integer) As Integer
+            If x < 0 Or x >= _ArrOfCells.GetLength(1) Then
+                Return -1
+            End If
+
             For i = _ArrOfCells.GetLength(0) - 1 To 0 Step -1
-                Console.WriteLine(_ArrOfCells(i, x).getCellValue())
-                Console.WriteLine(i)
                 If _ArrOfCells(i, x).getCellValue() = "x" Then
-                    Console.WriteLine(i)
                     Return i
                 End If
             Next
-            Return False
+            Return -1
         End Function
 
     End Class
@@ -240,7 +241,13 @@ Module Program
 
         Private Sub initPlayers()
             Console.WriteLine("How many players would you like?:")
-            _noOfPlayers = Integer.Parse(Console.ReadLine()) - 1
+            Dim input As Integer = -1
+
+            While input < 2 Or input > 5
+                input = Integer.Parse(Console.ReadLine())
+            End While
+
+            _noOfPlayers = input - 1
 
             For i = 0 To _noOfPlayers
                 Dim nplayer As New Player(_listOfSymbols(i), _listOfColours(i))
@@ -270,9 +277,26 @@ Module Program
 
         Public Sub turn()
             Dim x As Integer = _currentPlayer.turn()
-            _currentBoard.ChangeCell(_currentPlayer.getSymbol(), _currentBoard.getYval(x), x, _currentPlayer.getColour())
-            changeTurn()
+            Dim y As Integer = _currentBoard.getYval(x)
+
+            If y = -1 Then
+                Return
+            End If
+
+            _currentBoard.ChangeCell(_currentPlayer.getSymbol(), y, x, _currentPlayer.getColour())
             outputBoard()
+
+            If _currentBoard.checkWin(_currentPlayer, _currentBoard.getBoard()) Then
+                win(_currentPlayer)
+                End
+            End If
+
+            If _currentBoard.checkDraw(_currentBoard.getBoard()) Then
+                draw()
+                End
+            End If
+
+            changeTurn()
         End Sub
 
         Public Sub changeTurn()
@@ -287,19 +311,9 @@ Module Program
         Public Sub match()
             outputBoard()
             While True
-                If _currentBoard.checkWin(_currentPlayer, _currentBoard.getBoard()) Then
-                    win(_currentPlayer)
-                    Exit While
-                End If
-
-                If _currentBoard.checkDraw(_currentBoard.getBoard()) Then
-                    draw()
-                    Exit While
-                End If
                 Console.WriteLine("It is " + _currentPlayer.getName() + "'s turn now.")
                 turn()
             End While
-
         End Sub
 
         Private Sub win(winner As Player)
