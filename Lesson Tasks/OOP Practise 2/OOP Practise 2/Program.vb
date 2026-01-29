@@ -182,7 +182,7 @@ Module Program
         End Function
 
         Public Function getYval(ByVal x As Integer) As Integer
-            For i = _ArrOfCells.GetLength(0mmit) - 1 To 0 Step -1
+            For i = _ArrOfCells.GetLength(0) - 1 To 0 Step -1
                 Console.WriteLine(_ArrOfCells(i, x).getCellValue())
                 Console.WriteLine(i)
                 If _ArrOfCells(i, x).getCellValue() = "x" Then
