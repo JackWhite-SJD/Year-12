@@ -1,6 +1,7 @@
 Imports System
 Imports System.ComponentModel.DataAnnotations
 Imports System.Drawing
+Imports System.Runtime.InteropServices
 
 Module Program
 
@@ -41,8 +42,17 @@ Module Program
         End Function
 
         Public Function turn() As Integer
-            Console.WriteLine("Enter a collum")
-            Dim x As Integer = Integer.Parse(Console.ReadLine()) - 1
+            Dim x As Integer = 1
+            While True
+                Try
+                    Console.WriteLine("Enter a collum")
+                    x = Integer.Parse(Console.ReadLine()) - 1
+                    Exit While
+                Catch ex As Exception
+
+                End Try
+            End While
+
             Return x
         End Function
 
@@ -104,6 +114,7 @@ Module Program
         End Function
 
         Public Sub outputBoard()
+            Console.Clear()
             Dim cols As Integer = _ArrOfCells.GetLength(1)
 
             For i = 0 To _ArrOfCells.GetLength(0) - 1
@@ -256,11 +267,18 @@ Module Program
         End Sub
 
         Private Function initBoardSize() As Integer()
-            Console.WriteLine("Enter a row, col in : row,col form")
-            Dim xy() As String = Console.ReadLine().Split(","c)
-            Dim x As Integer = Integer.Parse(xy(1))
-            Dim y As Integer = Integer.Parse(xy(0))
-            Return {x, y}
+            While True
+                Try
+                    Console.WriteLine("Enter dimensions in row, col in : row,col form")
+                    Dim xy() As String = Console.ReadLine().Split(","c)
+                    Dim x As Integer = Integer.Parse(xy(1))
+                    Dim y As Integer = Integer.Parse(xy(0))
+                    Return {x, y}
+                Catch ex As Exception
+                    Console.WriteLine("Invalid input, try again")
+                End Try
+            End While
+            Return {1, 1}
         End Function
 
         Public Sub outputBoard()
@@ -275,12 +293,12 @@ Module Program
             Return _currentBoard.checkDraw(_currentBoard.getBoard())
         End Function
 
-        Public Sub turn()
+        Public Function turn() As Boolean
             Dim x As Integer = _currentPlayer.turn()
             Dim y As Integer = _currentBoard.getYval(x)
 
             If y = -1 Then
-                Return
+                Return False
             End If
 
             _currentBoard.ChangeCell(_currentPlayer.getSymbol(), y, x, _currentPlayer.getColour())
@@ -288,16 +306,17 @@ Module Program
 
             If _currentBoard.checkWin(_currentPlayer, _currentBoard.getBoard()) Then
                 win(_currentPlayer)
-                End
+                Return True
             End If
 
             If _currentBoard.checkDraw(_currentBoard.getBoard()) Then
                 draw()
-                End
+                Return True
             End If
 
             changeTurn()
-        End Sub
+            Return False
+        End Function
 
         Public Sub changeTurn()
             If _currentPlayerIndex = _listOfPlayer.Count() - 1 Then
@@ -308,11 +327,15 @@ Module Program
             _currentPlayer = _listOfPlayer(_currentPlayerIndex)
         End Sub
 
-        Public Sub match()
+        Private Sub match()
             outputBoard()
             While True
                 Console.WriteLine("It is " + _currentPlayer.getName() + "'s turn now.")
-                turn()
+                If turn() = True Then
+                    Exit While
+                Else
+                    Continue While
+                End If
             End While
         End Sub
 
@@ -325,11 +348,36 @@ Module Program
             Console.WriteLine("No one wins, womp womp.")
         End Sub
 
+        Public Sub CompleteGame()
+            Dim choice As String
+            While True
+                match()
+                _listOfPlayer.Sort(Function(elementA As Player, elementB As Player)
+                                       Return elementA.getScore.CompareTo(elementB.getScore)
+                                   End Function)
+
+
+                For Each p As Player In _listOfPlayer
+                    Console.WriteLine(p.getName() + " score:" + p.getScore().ToString())
+                Next
+
+                Console.WriteLine("Would you like another game?")
+                choice = Console.ReadLine()
+                If choice.Substring(0, 1).ToUpper() = "Y" Then
+                    Continue While
+                Else
+                    Console.WriteLine("Finito")
+                    Exit While
+                End If
+                _currentBoard = New board(_currentBoard.getSize())
+            End While
+        End Sub
+
     End Class
 
     Sub Main(args As String())
         Dim mygame As New game()
-        mygame.match()
+        mygame.CompleteGame()
         Console.ReadLine()
     End Sub
 End Module
