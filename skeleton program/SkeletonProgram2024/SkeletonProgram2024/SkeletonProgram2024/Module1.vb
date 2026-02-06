@@ -37,6 +37,12 @@ Module Module1
         Private AllowedPatterns As List(Of Pattern)
         Private AllowedSymbols As List(Of String)
 
+
+
+        'having multiple constructors is called overloading - same method name, different parameter lists.
+        'enables different functionality by varing inputs/parameters
+        'to overload regular subroutines, you must have an overloads keyword
+        'overloading functionality is already built into the New sub
         Sub New(ByVal Filename As String)
             Grid = New List(Of Cell)
             AllowedPatterns = New List(Of Pattern)
