@@ -1,4 +1,4 @@
-﻿'Skeleton Program code for the AQA A Level Paper 1 Summer 2024 examination
+'Skeleton Program code for the AQA A Level Paper 1 Summer 2024 examination
 'this code should be used in conjunction with the Preliminary Material
 'written by the AQA Programmer Team
 'developed in the Visual Studio Community Edition programming environment
@@ -17,7 +17,14 @@ Module Module1
             Dim Filename As String = Console.ReadLine()
             Dim MyPuzzle As Puzzle
             If Filename.Length > 0 Then
-                MyPuzzle = New Puzzle(Filename & ".txt")
+                Try
+                    Dim sr As New StreamReader(Filename)
+                    sr.ReadLine()
+                    MyPuzzle = New Puzzle(Filename & ".txt")
+                Catch ex As Exception
+                    Console.WriteLine()
+                End Try
+
             Else
                 MyPuzzle = New Puzzle(8, Int(8 * 8 * 0.6))
             End If
@@ -75,6 +82,9 @@ Module Module1
             Dim TPattern As Pattern = New Pattern("T", "TTT**T**T")
             AllowedPatterns.Add(TPattern)
             AllowedSymbols.Add("T")
+            Dim LPattern As Pattern = New Pattern("L", "L**L**LLL")
+            AllowedPatterns.Add(LPattern)
+            AllowedSymbols.Add("L")
         End Sub
 
         Private Sub LoadPuzzle(ByVal Filename As String)
@@ -124,18 +134,30 @@ Module Module1
                     Console.Write("Enter row number: ")
                     Try
                         Row = Console.ReadLine()
-                        Valid = True
+                        If Row < 8 And Row > 0 Then
+                            Valid = True
+                        Else
+                            Console.WriteLine("Invalid input")
+                        End If
+
                     Catch
+                        Console.WriteLine("Invalid input")
                     End Try
                 End While
                 Dim Column As Integer = -1
                 Valid = False
                 While Not Valid
-                    Console.Write("Enter column number: ")
+                    Console.Write("Enter collumn number: ")
                     Try
                         Column = Console.ReadLine()
-                        Valid = True
+                        If Column < 8 And Column > 0 Then
+                            Valid = True
+                        Else
+                            Console.WriteLine("Invalid input")
+                        End If
+
                     Catch
+                        Console.WriteLine("Invalid input")
                     End Try
                 End While
                 Dim Symbol As String = GetSymbolFromUser()
@@ -322,4 +344,21 @@ Module Module1
             Return False
         End Function
     End Class
+
+    Class powerCell
+        Inherits Cell
+        Sub New()
+            MyBase.New()
+            Symbol = "P"
+        End Sub
+
+        Public Overrides Sub UpdateCell()
+            Dim random As Integer = Rng.Next(0, 250)
+            If random <= 125 Then
+                Symbol = "P"
+            End If
+        End Sub
+
+    End Class
+
 End Module
