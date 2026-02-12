@@ -12,15 +12,21 @@ Module Module1
     Sub Main()
         Dim Again As String = "y"
         Dim Score As Integer
+        Dim MyPuzzle As Puzzle
         While Again = "y"
-            Console.Write("Press Enter to start a standard puzzle or enter name of file to load: ")
+            Console.Write("Press Enter to start a standard puzzle, enter name of file to load or enter a numeric digit: ")
             Dim Filename As String = Console.ReadLine()
-            Dim MyPuzzle As Puzzle
-            If Filename.Length > 0 Then
-                MyPuzzle = New Puzzle(Filename & ".txt")
-            Else
-                MyPuzzle = New Puzzle(8, Int(8 * 8 * 0.6))
-            End If
+            Try
+                Filename = Integer.Parse(Filename)
+                MyPuzzle = New Puzzle(Filename, Int(Filename * Filename * 0.6))
+            Catch ex As Exception
+                If Filename.Length > 0 Then
+                    MyPuzzle = New Puzzle(Filename & ".txt")
+                Else
+                    MyPuzzle = New Puzzle(8, Int(8 * 8 * 0.6))
+                End If
+            End Try
+
             Score = MyPuzzle.AttemptPuzzle()
             Console.WriteLine("Puzzle finished. Your score was: " & Score)
             Console.Write("Do another puzzle? ")
@@ -55,9 +61,29 @@ Module Module1
             SymbolsLeft = StartSymbols
             GridSize = Size
             Grid = New List(Of Cell)
+            Dim difficulty As Integer = 1
+            While True
+                Console.WriteLine("Enter difficulty between 1 and 3 inclusive:")
+                difficulty = Console.ReadLine()
+                If difficulty > 0 And difficulty < 4 Then
+                    Exit While
+                End If
+                Console.WriteLine("Invalid numeric input, please try again.")
+            End While
+
+
+            Select Case difficulty
+                Case 1
+                    difficulty = 90
+                Case 2
+                    difficulty = 75
+                Case 3
+                    difficulty = 60
+            End Select
+
             For Count = 1 To GridSize * GridSize
                 Dim C As Cell
-                If Rng.Next(1, 101) < 90 Then
+                If Rng.Next(1, 101) < difficulty Then
                     C = New Cell()
                 Else
                     C = New BlockedCell()
@@ -75,6 +101,10 @@ Module Module1
             Dim TPattern As Pattern = New Pattern("T", "TTT**T**T")
             AllowedPatterns.Add(TPattern)
             AllowedSymbols.Add("T")
+
+            Dim HPattern As Pattern = New Pattern("H", "H*HHH*HHH")
+            AllowedPatterns.Add(HPattern)
+            AllowedSymbols.Add("H")
         End Sub
 
         Private Sub LoadPuzzle(ByVal Filename As String)
@@ -124,7 +154,10 @@ Module Module1
                     Console.Write("Enter row number: ")
                     Try
                         Row = Console.ReadLine()
-                        Valid = True
+                        If Row > 0 And Row < 9 Then
+                            Valid = True
+                        End If
+
                     Catch
                     End Try
                 End While
@@ -134,7 +167,9 @@ Module Module1
                     Console.Write("Enter column number: ")
                     Try
                         Column = Console.ReadLine()
-                        Valid = True
+                        If Column < 9 And Column > 0 Then
+                            Valid = True
+                        End If
                     Catch
                     End Try
                 End While
@@ -188,7 +223,11 @@ Module Module1
                                 GetCell(StartRow - 2, StartColumn).AddToNotAllowedSymbols(CurrentSymbol)
                                 GetCell(StartRow - 1, StartColumn).AddToNotAllowedSymbols(CurrentSymbol)
                                 GetCell(StartRow - 1, StartColumn + 1).AddToNotAllowedSymbols(CurrentSymbol)
-                                Return 10
+                                If CurrentSymbol = "H" Then
+                                    Return 20
+                                Else
+                                    Return 10
+                                End If
                             End If
                         Next
                     Catch
