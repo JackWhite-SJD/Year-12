@@ -1,4 +1,4 @@
-﻿'Skeleton Program code for the AQA A Level Paper 1 Summer 2024 examination
+'Skeleton Program code for the AQA A Level Paper 1 Summer 2024 examination
 'this code should be used in conjunction with the Preliminary Material
 'written by the AQA Programmer Team
 'developed in the Visual Studio Community Edition programming environment
@@ -12,21 +12,22 @@ Module Module1
     Sub Main()
         Dim Again As String = "y"
         Dim Score As Integer
-        Dim MyPuzzle As Puzzle
         While Again = "y"
-            Console.Write("Press Enter to start a standard puzzle, enter name of file to load or enter a numeric digit: ")
+            Console.Write("Press Enter to start a standard puzzle or enter name of file to load: ")
             Dim Filename As String = Console.ReadLine()
-            Try
-                Filename = Integer.Parse(Filename)
-                MyPuzzle = New Puzzle(Filename, Int(Filename * Filename * 0.6))
-            Catch ex As Exception
-                If Filename.Length > 0 Then
+            Dim MyPuzzle As Puzzle
+            If Filename.Length > 0 Then
+                Try
+                    Dim sr As New StreamReader(Filename)
+                    sr.ReadLine()
                     MyPuzzle = New Puzzle(Filename & ".txt")
-                Else
-                    MyPuzzle = New Puzzle(8, Int(8 * 8 * 0.6))
-                End If
-            End Try
+                Catch ex As Exception
+                    Console.WriteLine()
+                End Try
 
+            Else
+                MyPuzzle = New Puzzle(8, Int(8 * 8 * 0.6))
+            End If
             Score = MyPuzzle.AttemptPuzzle()
             Console.WriteLine("Puzzle finished. Your score was: " & Score)
             Console.Write("Do another puzzle? ")
@@ -61,29 +62,9 @@ Module Module1
             SymbolsLeft = StartSymbols
             GridSize = Size
             Grid = New List(Of Cell)
-            Dim difficulty As Integer = 1
-            While True
-                Console.WriteLine("Enter difficulty between 1 and 3 inclusive:")
-                difficulty = Console.ReadLine()
-                If difficulty > 0 And difficulty < 4 Then
-                    Exit While
-                End If
-                Console.WriteLine("Invalid numeric input, please try again.")
-            End While
-
-
-            Select Case difficulty
-                Case 1
-                    difficulty = 90
-                Case 2
-                    difficulty = 75
-                Case 3
-                    difficulty = 60
-            End Select
-
             For Count = 1 To GridSize * GridSize
                 Dim C As Cell
-                If Rng.Next(1, 101) < difficulty Then
+                If Rng.Next(1, 101) < 90 Then
                     C = New Cell()
                 Else
                     C = New BlockedCell()
@@ -101,10 +82,9 @@ Module Module1
             Dim TPattern As Pattern = New Pattern("T", "TTT**T**T")
             AllowedPatterns.Add(TPattern)
             AllowedSymbols.Add("T")
-
-            Dim HPattern As Pattern = New Pattern("H", "H*HHH*HHH")
-            AllowedPatterns.Add(HPattern)
-            AllowedSymbols.Add("H")
+            Dim LPattern As Pattern = New Pattern("L", "L**L**LLL")
+            AllowedPatterns.Add(LPattern)
+            AllowedSymbols.Add("L")
         End Sub
 
         Private Sub LoadPuzzle(ByVal Filename As String)
@@ -154,23 +134,30 @@ Module Module1
                     Console.Write("Enter row number: ")
                     Try
                         Row = Console.ReadLine()
-                        If Row > 0 And Row < 9 Then
+                        If Row < 8 And Row > 0 Then
                             Valid = True
+                        Else
+                            Console.WriteLine("Invalid input")
                         End If
 
                     Catch
+                        Console.WriteLine("Invalid input")
                     End Try
                 End While
                 Dim Column As Integer = -1
                 Valid = False
                 While Not Valid
-                    Console.Write("Enter column number: ")
+                    Console.Write("Enter collumn number: ")
                     Try
                         Column = Console.ReadLine()
-                        If Column < 9 And Column > 0 Then
+                        If Column < 8 And Column > 0 Then
                             Valid = True
+                        Else
+                            Console.WriteLine("Invalid input")
                         End If
+
                     Catch
+                        Console.WriteLine("Invalid input")
                     End Try
                 End While
                 Dim Symbol As String = GetSymbolFromUser()
@@ -223,11 +210,7 @@ Module Module1
                                 GetCell(StartRow - 2, StartColumn).AddToNotAllowedSymbols(CurrentSymbol)
                                 GetCell(StartRow - 1, StartColumn).AddToNotAllowedSymbols(CurrentSymbol)
                                 GetCell(StartRow - 1, StartColumn + 1).AddToNotAllowedSymbols(CurrentSymbol)
-                                If CurrentSymbol = "H" Then
-                                    Return 20
-                                Else
-                                    Return 10
-                                End If
+                                Return 10
                             End If
                         Next
                     Catch
@@ -361,4 +344,21 @@ Module Module1
             Return False
         End Function
     End Class
+
+    Class powerCell
+        Inherits Cell
+        Sub New()
+            MyBase.New()
+            Symbol = "P"
+        End Sub
+
+        Public Overrides Sub UpdateCell()
+            Dim random As Integer = Rng.Next(0, 250)
+            If random <= 125 Then
+                Symbol = "P"
+            End If
+        End Sub
+
+    End Class
+
 End Module
