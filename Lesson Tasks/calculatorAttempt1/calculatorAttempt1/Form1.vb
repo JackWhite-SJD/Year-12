@@ -1,4 +1,7 @@
-﻿Public Class Form1
+﻿Imports System.Net.NetworkInformation
+Imports System.Threading
+
+Public Class Form1
     Dim boxEqn As New TextBox
     Dim isOperatorUsed As Boolean = False
     Dim arrOfButtons(,) As Button
@@ -64,8 +67,9 @@
                 result = intNum1
         End Select
         boxEqn.Text = result.ToString()
-        AC_Click(sender, e)
         arrOfButtons(3, 1).Text = result.ToString
+        boxEqn.Text = ""
+
     End Sub
 
     'Public Sub switchOperatorEnabled()
