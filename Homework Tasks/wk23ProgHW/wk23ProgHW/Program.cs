@@ -7,11 +7,9 @@ class Program
     static void Main(string[] args)
     {
         int[] intArray = GetIntArray();
+        intArray = arrayBubbleSort(intArray);
+        Console.WriteLine();
         Output(intArray);
-        outputLowest(intArray);
-        intArray = RemoveOddNumbers(intArray);
-        Output(intArray);
-        outputLowest(intArray);
     }
 
     static void Output(int[] arr)
@@ -42,6 +40,33 @@ class Program
         Console.WriteLine("Lowerst value:" + lowerstVal.ToString());
     }
 
+
+    static int[] arrayBubbleSort(int[] intArr)
+    {
+        int temp;
+        for (int j = 0; j < intArr.Length-1; j++)
+        {
+            for (int i = 0; i < intArr.Length - 2; i++)
+            {
+                if (intArr[i] > intArr[i + 1])
+                {
+                    Console.WriteLine();
+                    Console.WriteLine(i);
+                    Console.WriteLine(intArr[i]);
+                    Console.WriteLine(intArr[i + 1]);
+                    temp = intArr[i + 1];
+                    intArr[i + 1] = intArr[i];
+                    intArr[i] = temp;
+                    Console.WriteLine();
+                    Console.WriteLine(i);
+                    Console.WriteLine(intArr[i]);
+                    Console.WriteLine(intArr[i + 1]);
+
+                }
+            }
+        }
+        return intArr;
+    }
 
     static int[] RemoveOddNumbers(int[] intArr)
     {
