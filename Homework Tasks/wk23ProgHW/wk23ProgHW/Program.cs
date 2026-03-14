@@ -8,7 +8,6 @@ class Program
     {
         int[] intArray = GetIntArray();
         intArray = arrayBubbleSort(intArray);
-        Console.WriteLine();
         Output(intArray);
     }
 
@@ -50,18 +49,9 @@ class Program
             {
                 if (intArr[i] > intArr[i + 1])
                 {
-                    Console.WriteLine();
-                    Console.WriteLine(i);
-                    Console.WriteLine(intArr[i]);
-                    Console.WriteLine(intArr[i + 1]);
                     temp = intArr[i + 1];
                     intArr[i + 1] = intArr[i];
                     intArr[i] = temp;
-                    Console.WriteLine();
-                    Console.WriteLine(i);
-                    Console.WriteLine(intArr[i]);
-                    Console.WriteLine(intArr[i + 1]);
-
                 }
             }
         }
