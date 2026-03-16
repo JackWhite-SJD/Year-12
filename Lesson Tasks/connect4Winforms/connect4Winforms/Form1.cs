@@ -6,6 +6,7 @@ using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Runtime.Remoting.Channels;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,6 +23,7 @@ namespace connect4Winforms
         private player _currentPlayer;
         private bool _boolCurrentPlayer;
         private player[] _players;
+        private Cell[,] cellGrid;
 
         public Form1()
         {
@@ -105,9 +107,43 @@ namespace connect4Winforms
         private void _BntClick(object sender , EventArgs e)
         {
             Button btn = sender as Button;
-            int col = Convert.ToInt32(btn.Text.ToString())-1;           
+            int col = Convert.ToInt16(btn.Text.ToString())-1;
+            bool doTurn = turn(col);
         }
 
+
+        private bool turn(int col)
+        {
+           int yVal =  getY(col);
+            if (yVal == -1)
+            {
+                return false;
+            }
+
+            cellGrid[yVal, col].setFilled(true);
+            cellGrid[yVal, col].setColour(Color.Blue);
+
+
+
+            return true;
+        }
+
+        private int getY(int col)
+        {
+            int Yval = -1;
+            if (col >=0 && col <= cellGrid.GetLength(1))
+            {
+                for(int i = cellGrid.GetLength(0) -1; i >= 0; i--)
+                {
+                    if (cellGrid[i,col].getFilled() == false)
+                    {
+                        Yval = i;
+                    }
+                }
+            }
+
+            return Yval;
+        }
     }
 
     public class Cell : PictureBox
@@ -116,24 +152,26 @@ namespace connect4Winforms
         private bool _filled = false;
         private int _col;
         private int _row;
-        
-        public Cell(int row, int col , int width, int height,int top, int left)
+
+        public Cell(int row, int col, int width, int height, int top, int left)
         {
             _col = col;
             _row = row;
             Left = left + (60 * col + 1);
-            Top = top +60+ (60*row);
+            Top = top + 60 + (60 * row);
             Width = width;
             Height = height;
             BackColor = Color.Gray;
         }
-
 
         public bool getFilled() { return _filled; }
         
         public int getCol() { return _col; }
 
         public int getRow() { return _row; }
+
+        public void setColour(Color color) { this.BackColor = color; }
+
         public void setFilled(bool filled) { _filled = filled; }
 
         
