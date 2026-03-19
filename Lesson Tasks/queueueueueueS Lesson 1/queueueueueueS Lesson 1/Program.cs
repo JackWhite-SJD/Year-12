@@ -5,16 +5,15 @@
         static void Main(string[] args)
         {
             Queue queue = new Queue(7);
-            queue.outputArray();
+            queue.ENQUEUE(1);
+            queue
+
+                .ENQUEUE(2);
+            queue.ENQUEUE(3);
+            queue.ENQUEUE(4);
 
             queue.ENQUEUE(5);
-            queue.outputArray();
             queue.ENQUEUE(6);
-            queue.outputArray();
-            queue.ENQUEUE(9);
-            queue.DEQUEUE();
-            queue.DEQUEUE();
-            queue.outputArray();
             queue.DEQUEUE();
             queue.outputArray();
         }
@@ -30,42 +29,37 @@
 
         public Queue(int numberOfItems)
         {
-            length = numberOfItems;
+            length = numberOfItems + 1;
             queueArray = new int[length];
             frontPtr = 0;
             backPtr = 0;
             totalItems = 0;
         }
 
-        private int[] getArr(int noOfItems)
-        {
-            int[] currentArray = new int[noOfItems];
-
-            for (int i = 0; i < noOfItems; i++)
-            {
-                
-            }
-            return currentArray;
-        }
 
         public void outputArray()
+           
         {
-            for (int i = 0; i < length; i++)
+            for (int i = frontPtr; i < length; i++)
             {
+                if (queueArray[i] != 0)
+                {
                 Console.WriteLine(queueArray[i]);
-            }
+
+                }
+            }s
             Console.WriteLine();
         }
 
         public int[] getQueueArray() { return queueArray; }
         public void ENQUEUE(int item)
         {
-            if (totalItems < length)
+            if (totalItems < length-1)
             {
                 totalItems += 1;
                 queueArray[backPtr] = item;
                 backPtr += 1;
-                if (backPtr == length - 1)
+                if (backPtr == length - 2)
                 {
                     backPtr = 0;
                 }
@@ -79,7 +73,7 @@
             {
                 finalItem = queueArray[frontPtr];
                 frontPtr += 1;
-                if (frontPtr == length - 1)
+                if (frontPtr == length - 2)
                 {
                     frontPtr = 0;
                 }
