@@ -8,7 +8,52 @@ namespace savingAndLoadingCSVs
             csvWriter();
             csvReader();
         }
+        public string verifyPasssword()
+        {
+            string password = "";
+            while (true)
+            {
+                Console.WriteLine("Enter password");
+                password = Console.ReadLine();
+                if(password.Length >= 12)
+                {
 
+                }
+            }
+            
+            
+
+            return password;
+        }
+        public bool searchForChars(string test ,string c1, string c2, string c3)
+          
+        {
+            bool boolC1 = false;
+            bool boolC2 = false;
+            bool boolC3 = false;
+            for (int i = 0; i < test.Length; i++)
+            {
+                if (test[i].ToString() == test[i].ToString().ToUpper(){
+                    boolC1 = true;
+                    break;
+                }
+            }
+
+            for (int i = 0; iq < length; iq++)
+            {
+
+            }
+
+            if (boolC1 == true && boolC2 == true && boolC3 == true)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
         public static void csvWriter()
         {
             StreamWriter fileWriter = new StreamWriter("test.csv",true);
