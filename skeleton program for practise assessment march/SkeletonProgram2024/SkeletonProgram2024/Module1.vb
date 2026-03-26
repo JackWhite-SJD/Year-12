@@ -4,6 +4,7 @@
 'developed in the Visual Studio Community Edition programming environment
 
 Imports System.IO
+Imports Microsoft.Win32
 
 Module Module1
 
@@ -13,27 +14,122 @@ Module Module1
         Dim Again As String = "y"
         Dim Score As Integer
         While Again = "y"
-            Console.Write("Press Enter to start a standard puzzle or enter name of file to load: ")
-            Dim Filename As String = Console.ReadLine()
-            Dim MyPuzzle As Puzzle
-            If Filename.Length > 0 Then
-                MyPuzzle = New Puzzle(Filename & ".txt")
+            Console.WriteLine("(1) two player")
+            Console.WriteLine("(2) single player")
+            Dim c As String = Console.ReadLine()
+            If c = "1" Then
+                Console.WriteLine("Player 1 symbol = Q, enter player 1 Name:")
+                c = Console.ReadLine()
+                Dim player1 As Player = New Player(c, "Q")
+
+                Console.WriteLine("Player 2 symbol = X, enter player 2 Name:")
+                c = Console.ReadLine()
+                Dim player2 As Player = New Player(c, "Q")
+
+                Dim puzzle As TwoPlayerPuzzle = New TwoPlayerPuzzle(8, Int(8 * 8 * 0.6), player1, player2)
+                puzzle.AttemptPuzzle()
+
             Else
-                MyPuzzle = New Puzzle(8, Int(8 * 8 * 0.6))
+                Console.Write("Press Enter to start a standard puzzle or enter name of file to load: ")
+                Dim Filename As String = Console.ReadLine()
+                Dim MyPuzzle As Puzzle
+                If Filename.Length > 0 Then
+                    MyPuzzle = New Puzzle(Filename & ".txt")
+                Else
+                    MyPuzzle = New Puzzle(8, Int(8 * 8 * 0.6))
+                End If
+                Score = MyPuzzle.AttemptPuzzle()
+                Console.WriteLine("Puzzle finished. Your score was: " & Score)
             End If
-            Score = MyPuzzle.AttemptPuzzle()
-            Console.WriteLine("Puzzle finished. Your score was: " & Score)
+
             Console.Write("Do another puzzle? ")
             Again = Console.ReadLine().ToLower()
         End While
         Console.ReadLine()
     End Sub
 
+    Class TwoPlayerPuzzle
+        Inherits Puzzle
+        Private _player1 As Player
+        Private _player2 As Player
+        Private _currentPlayer As Player
+        Sub New(ByVal Size As Integer, ByVal StartSymbols As Integer, ByVal player1 As Player, ByVal player2 As Player)
+            MyBase.New(Size, StartSymbols)
+            _player1 = player1
+            _player2 = player2
+        End Sub
+
+        Public Overrides Function AttemptPuzzle() As Integer
+            Dim Finished As Boolean = False
+            changeTurn()
+            While Not Finished
+                changeTurn()
+                DisplayPuzzle()
+                Dim Valid As Boolean = False
+                Dim Row As Integer = -1
+                While Not Valid
+                    Console.WriteLine(_currentPlayer.getName() + " 's turn.")
+                    Console.Write("Enter row number: ")
+                    Try
+                        Row = Console.ReadLine()
+                        Valid = True
+                    Catch
+                    End Try
+                End While
+                Dim Column As Integer = -1
+                Valid = False
+                While Not Valid
+                    Console.Write("Enter column number: ")
+                    Try
+                        Column = Console.ReadLine()
+                        Valid = True
+                    Catch
+                    End Try
+                End While
+                Dim Symbol As String = GetSymbolFromUser()
+                SymbolsLeft -= 1
+                Dim CurrentCell As Cell = GetCell(Row, Column)
+                If Symbol = "B" And CurrentCell.CheckSymbolAllowed("@") = False Then
+                    Dim celly As Integer = GetIndexOfCell(Row, Column)
+                    MyBase.Grid(celly) = New Cell()
+                ElseIf CurrentCell.CheckSymbolAllowed(Symbol) Then
+                    CurrentCell.ChangeSymbolInCell(Symbol)
+                    Dim AmountToAddToScore As Integer = CheckForMatchWithPattern(Row, Column)
+                    If AmountToAddToScore > 0 Then
+                        _currentPlayer.incrementScore(AmountToAddToScore)
+                    End If
+                End If
+                If SymbolsLeft = 0 Then
+                    Finished = True
+                End If
+            End While
+            Console.WriteLine()
+            DisplayPuzzle()
+            If _player1.getScore() > _player2.getScore() Then
+                _currentPlayer = _player1
+            ElseIf _player1.getScore() < _player2.getScore() Then
+                _currentPlayer = _player2
+            Else
+                Return 0
+            End If
+            Console.WriteLine("Winner:" + _currentPlayer.getName())
+            Return _currentPlayer.getScore()
+        End Function
+
+        Sub changeTurn()
+            If _currentPlayer.getSymbol() = "Q" Then
+                _currentPlayer = _player2
+            Else
+                _currentPlayer = _player1
+            End If
+        End Sub
+    End Class
+
     Class Puzzle
         Private Score As Integer
-        Private SymbolsLeft As Integer
+        Protected SymbolsLeft As Integer
         Private GridSize As Integer
-        Private Grid As List(Of Cell)
+        Protected Grid As List(Of Cell)
         Private AllowedPatterns As List(Of Pattern)
         Private AllowedSymbols As List(Of String)
 
@@ -41,6 +137,7 @@ Module Module1
             Grid = New List(Of Cell)
             AllowedPatterns = New List(Of Pattern)
             AllowedSymbols = New List(Of String)
+            AllowedSymbols.Add("B")
             LoadPuzzle(Filename)
         End Sub
 
@@ -69,7 +166,13 @@ Module Module1
             Dim TPattern As Pattern = New Pattern("T", "TTT**T**T")
             AllowedPatterns.Add(TPattern)
             AllowedSymbols.Add("T")
+            AllowedSymbols.Add("B")
         End Sub
+
+
+        Protected Function GetIndexOfCell(ByVal Row As Integer, ByVal Column As Integer) As Integer
+            Return ((GridSize - Row) * GridSize + Column - 1)
+        End Function
 
         Private Sub LoadPuzzle(ByVal Filename As String)
             Try
@@ -135,7 +238,10 @@ Module Module1
                 Dim Symbol As String = GetSymbolFromUser()
                 SymbolsLeft -= 1
                 Dim CurrentCell As Cell = GetCell(Row, Column)
-                If CurrentCell.CheckSymbolAllowed(Symbol) Then
+                If Symbol = "B" And CurrentCell.CheckSymbolAllowed("@") = False Then
+                    Dim celly As Integer = GetIndexOfCell(Row, Column)
+                    Grid(celly) = New Cell()
+                ElseIf CurrentCell.CheckSymbolAllowed(Symbol) Then
                     CurrentCell.ChangeSymbolInCell(Symbol)
                     Dim AmountToAddToScore As Integer = CheckForMatchWithPattern(Row, Column)
                     If AmountToAddToScore > 0 Then
@@ -152,7 +258,7 @@ Module Module1
             Return Score
         End Function
 
-        Private Function GetCell(ByVal Row As Integer, ByVal Column As Integer) As Cell
+        Protected Overridable Function GetCell(ByVal Row As Integer, ByVal Column As Integer) As Cell
             Return Grid((GridSize - Row) * GridSize + Column - 1)
         End Function
 
@@ -192,7 +298,7 @@ Module Module1
             Return 0
         End Function
 
-        Private Function GetSymbolFromUser() As String
+        Protected Overridable Function GetSymbolFromUser() As String
             Dim Symbol As String = ""
             While Not AllowedSymbols.Contains(Symbol)
                 Console.Write("Enter symbol: ")
@@ -315,5 +421,32 @@ Module Module1
         Public Overrides Function CheckSymbolAllowed(ByVal SymbolToCheck As String) As Boolean
             Return False
         End Function
+    End Class
+
+    Class Player
+        Private _name As String
+        Private _score As Integer
+        Private _symbol As String
+
+        Public Sub New(n As String, s As String)
+            _score = 0
+            _name = n
+            _symbol = s
+        End Sub
+
+        Public Function getName() As String
+            Return _name
+        End Function
+
+        Public Function getScore() As Integer
+            Return _score
+        End Function
+
+        Public Function getSymbol() As String
+            Return _symbol
+        End Function
+        Public Sub incrementScore(n As Integer)
+            _score += n
+        End Sub
     End Class
 End Module
